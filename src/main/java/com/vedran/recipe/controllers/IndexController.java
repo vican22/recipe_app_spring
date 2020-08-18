@@ -21,15 +21,9 @@ public class IndexController {
     }
 
     @RequestMapping({"", "/", "/index"})
-    private String getIndexPage(Model model) {
+    public String getIndexPage(Model model) {
         model.addAttribute("recipes", recipeService.getRecipes());
         return "index";
     }
 
-//    @RequestMapping("/")
-//    public ModelAndView getIndexPage() {
-//        ModelAndView modelAndView = new ModelAndView();
-//        modelAndView.setViewName("index");
-//        return modelAndView;
-//    }
 }
