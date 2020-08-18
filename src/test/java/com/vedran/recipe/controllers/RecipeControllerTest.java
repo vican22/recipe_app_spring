@@ -33,7 +33,8 @@ public class RecipeControllerTest {
         Recipe recipe = new Recipe();
         recipe.setId(1L);
 
-        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+        MockMvc mockMvc = MockMvcBuilders
+                .standaloneSetup(controller).build();
 
         when(recipeService.findById(anyLong()))
                 .thenReturn(recipe);
