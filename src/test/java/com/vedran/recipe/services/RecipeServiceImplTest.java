@@ -1,5 +1,7 @@
 package com.vedran.recipe.services;
 
+import com.vedran.recipe.converters.RecipeDtoToRecipe;
+import com.vedran.recipe.converters.RecipeToRecipeDto;
 import com.vedran.recipe.models.Recipe;
 import com.vedran.recipe.repositories.RecipeRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +21,10 @@ class RecipeServiceImplTest {
     RecipeServiceImpl recipeService;
 
     @Mock
+    RecipeDtoToRecipe dtoToRecipeConverter;
+    @Mock
+    RecipeToRecipeDto recipeToRecipeDtoConverter;
+    @Mock
     RecipeRepository recipeRepository;
 
     @BeforeEach
@@ -26,7 +32,7 @@ class RecipeServiceImplTest {
         MockitoAnnotations
                 .initMocks(this);
 
-        recipeService = new RecipeServiceImpl(recipeRepository);
+        recipeService = new RecipeServiceImpl(recipeRepository, dtoToRecipeConverter, recipeToRecipeDtoConverter);
     }
 
     @Test
@@ -62,5 +68,21 @@ class RecipeServiceImplTest {
 
         verify(recipeRepository, times(1)).findAll();
 
+    }
+
+    @Test
+    public void testDeleteById() throws Exception {
+
+        //given
+        Long idToDelete = 2L;
+
+        //when
+        recipeService.deleteById(idToDelete);
+
+        //no 'when', since method has void return type
+
+        //then
+        verify(recipeRepository, times(1))
+                .deleteById(anyLong());
     }
 }
