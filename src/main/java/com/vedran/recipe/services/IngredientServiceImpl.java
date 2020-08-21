@@ -69,14 +69,44 @@ public class IngredientServiceImpl implements IngredientService {
                                             ingredientDto.getUnitOfMeasure().getId())
             .orElseThrow(() -> new RuntimeException("UOM NOT FOUND")));
         } else {
-            recipe.addIngredient(convertIngredientDto.convert(ingredientDto));
+            //add new ingredient
+            Ingredient ingredient = convertIngredientDto.convert(ingredientDto);
+            ingredient.setRecipe(recipe);
+            recipe.addIngredient(ingredient);
         }
 
         Recipe savedRecipe = recipeRepository.save(recipe);
 
+        Optional<Ingredient> optionalIngredient = savedRecipe.getIngredients().stream()
+                .filter(ingredient -> ingredient.getId().equals(ingredientDto.getId()))
+                .findFirst();
 
-        return convertIngredient.convert(savedRecipe.getIngredients().stream()
-        .filter(ingredient -> ingredient.getId().equals(ingredientDto.getId()))
-                .findFirst().get());
+        //check by description
+        if (!optionalIngredient.isPresent()) {
+            optionalIngredient = savedRecipe.getIngredients().stream()
+                    .filter(ingredient -> ingredient.getDescription().equals(ingredientDto.getDescription()))
+                    .filter(ingredient -> ingredient.getAmount().equals(ingredientDto.getAmount()))
+                    .filter(ingredient -> ingredient.getUnitOfMeasure().getId().equals(ingredientDto.getUnitOfMeasure().getId()))
+                    .findFirst();
+        }
+
+        //todo check for fail
+        return convertIngredient.convert(optionalIngredient.get());
+    }
+
+    @Override
+    public void deleteById(Long recipeId, Long idToDelete) {
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new RuntimeException("Recipe Not Found"));
+
+       Ingredient ingredientFound = recipe.getIngredients()
+                .stream()
+                .filter(ingredient -> ingredient.getId().equals(idToDelete))
+                .findFirst().orElseThrow(() -> new RuntimeException("Ingredient with given id not found"));
+
+       ingredientFound.setRecipe(null);
+       recipe.getIngredients().remove(ingredientFound);
+       recipeRepository.save(recipe);
+
     }
 }

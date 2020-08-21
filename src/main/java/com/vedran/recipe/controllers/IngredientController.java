@@ -1,6 +1,8 @@
 package com.vedran.recipe.controllers;
 
 import com.vedran.recipe.dto.IngredientDto;
+import com.vedran.recipe.dto.RecipeDto;
+import com.vedran.recipe.dto.UnitOfMeasureDto;
 import com.vedran.recipe.services.IngredientService;
 import com.vedran.recipe.services.RecipeService;
 import com.vedran.recipe.services.UnitOfMeasureService;
@@ -31,8 +33,7 @@ public class IngredientController {
         return "recipe/ingredient/list";
     }
 
-    @GetMapping
-    @RequestMapping("recipe/{recipeId}/ingredient/{id}/show")
+    @GetMapping("recipe/{recipeId}/ingredient/{id}/show")
     public String showRecipeIngredient(@PathVariable Long recipeId,
                                        @PathVariable Long id,
                                        Model model) {
@@ -41,8 +42,7 @@ public class IngredientController {
         return "recipe/ingredient/show";
     }
 
-    @GetMapping
-    @RequestMapping("recipe/{recipeId}/ingredient/{id}/update")
+    @GetMapping("recipe/{recipeId}/ingredient/{id}/update")
     public String updateRecipeIngredient(@PathVariable Long recipeId,
                                          @PathVariable Long id,
                                          Model model) {
@@ -53,11 +53,36 @@ public class IngredientController {
         return "recipe/ingredient/ingredientform";
     }
 
-    @PostMapping
-    @RequestMapping("recipe/{recipeId}/ingredient")
+    @PostMapping("recipe/{recipeId}/ingredient")
     public String saveOrUpdate(@ModelAttribute IngredientDto ingredientDto) {
         IngredientDto savedIngredient = ingredientService.saveIngredientDto(ingredientDto);
 
         return "redirect:/recipe/" + savedIngredient.getRecipeId() + "/ingredient/" + savedIngredient.getId() + "/show";
+    }
+
+    @GetMapping("recipe/{recipeId}/ingredient/new")
+    public String newRecipe(@PathVariable Long recipeId, Model model) {
+        //make sure we have a good id value
+        RecipeDto recipeDto = recipeService.findRecipeDtoById(recipeId);
+        //todo raise exception if null
+
+        //need to return back parent id for hidden form property
+        IngredientDto ingredientDto = new IngredientDto();
+        ingredientDto.setRecipeId(recipeId);
+        model.addAttribute("ingredient", ingredientDto);
+
+        //init uom
+        ingredientDto.setUnitOfMeasure(new UnitOfMeasureDto());
+
+        model.addAttribute("uomList", unitOfMeasureService.listAllUoms());
+
+        return "recipe/ingredient/ingredientform";
+    }
+
+    @GetMapping("recipe/{recipeId}/ingredient/{id}/delete")
+    public String deleteById(@PathVariable Long recipeId, @PathVariable Long id) {
+        ingredientService.deleteById(recipeId, id);
+
+        return "redirect:/recipe/" + recipeId + "/ingredients";
     }
 }

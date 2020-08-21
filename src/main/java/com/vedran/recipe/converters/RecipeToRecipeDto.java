@@ -36,6 +36,7 @@ public class RecipeToRecipeDto implements Converter<Recipe, RecipeDto> {
         dto.setDifficulty(source.getDifficulty());
         dto.setDirections(source.getDirections());
         dto.setServings(source.getServings());
+        dto.setImage(source.getImage());
         dto.setSource(source.getSource());
         dto.setUrl(source.getUrl());
         dto.setNotes(notesConverter.convert(source.getNotes()));
