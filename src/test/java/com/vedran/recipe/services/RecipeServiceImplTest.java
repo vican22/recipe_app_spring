@@ -2,6 +2,7 @@ package com.vedran.recipe.services;
 
 import com.vedran.recipe.converters.RecipeDtoToRecipe;
 import com.vedran.recipe.converters.RecipeToRecipeDto;
+import com.vedran.recipe.exceptions.NotFoundException;
 import com.vedran.recipe.models.Recipe;
 import com.vedran.recipe.repositories.RecipeRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -84,5 +85,23 @@ class RecipeServiceImplTest {
         //then
         verify(recipeRepository, times(1))
                 .deleteById(anyLong());
+    }
+
+    @Test
+    public void getRecipeByIdTestNotFound() throws Exception {
+        //given
+        Optional<Recipe> recipeOptional = Optional.empty();
+
+        when(recipeRepository.findById(anyLong()))
+                .thenReturn(recipeOptional);
+
+        //when
+        NotFoundException notFoundException = assertThrows(
+                NotFoundException.class, () -> recipeService.findById(1L),
+                ""
+        );
+
+        //then
+        assertTrue(notFoundException.getMessage().contains("Recipe Not Found"));
     }
 }

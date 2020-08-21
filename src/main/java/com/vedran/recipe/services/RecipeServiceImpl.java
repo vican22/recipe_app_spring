@@ -3,6 +3,7 @@ package com.vedran.recipe.services;
 import com.vedran.recipe.converters.RecipeDtoToRecipe;
 import com.vedran.recipe.converters.RecipeToRecipeDto;
 import com.vedran.recipe.dto.RecipeDto;
+import com.vedran.recipe.exceptions.NotFoundException;
 import com.vedran.recipe.models.Recipe;
 import com.vedran.recipe.repositories.RecipeRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +42,7 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public Recipe findById(Long id) {
         return recipeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Not Found Recipe"));
+                .orElseThrow(() -> new NotFoundException("Recipe Not Found"));
     }
 
     @Override

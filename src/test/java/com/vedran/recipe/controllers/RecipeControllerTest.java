@@ -1,7 +1,9 @@
 package com.vedran.recipe.controllers;
 
 import com.vedran.recipe.dto.RecipeDto;
+import com.vedran.recipe.exceptions.NotFoundException;
 import com.vedran.recipe.models.Recipe;
+import com.vedran.recipe.repositories.RecipeRepository;
 import com.vedran.recipe.services.RecipeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -97,4 +99,18 @@ public class RecipeControllerTest {
 
         verify(recipeService, times(1)).deleteById(anyLong());
     }
+
+    @Test
+    public void testGetRecipeNotFound() throws Exception {
+
+        Recipe recipe = new Recipe();
+        recipe.setId(1L);
+
+        when(recipeService.findById(anyLong()))
+                .thenThrow(NotFoundException.class);
+
+        mockMvc.perform(get("/recipe/1/show"))
+                .andExpect(status().isNotFound());
+    }
+
 }
