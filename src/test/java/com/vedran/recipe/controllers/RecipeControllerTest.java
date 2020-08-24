@@ -72,9 +72,28 @@ public class RecipeControllerTest {
                 .thenReturn(recipeDto);
 
         mockMvc.perform(post("/recipe")
-        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        .param("id", "")
+        .param("description", "some string")
+        .param("directions", "some directions"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/recipe/2/show"));
+    }
+
+    @Test
+    public void testPostNewRecipeFormValidationFail() throws Exception {
+        RecipeDto recipeDto = new RecipeDto();
+        recipeDto.setId(2L);
+
+        when(recipeService.saveRecipeDto(any()))
+                .thenReturn(recipeDto);
+
+        mockMvc.perform(post("/recipe")
+        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        .param("id", ""))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("recipe"))
+                .andExpect(view().name("recipe/recipeform"));
     }
 
     @Test
